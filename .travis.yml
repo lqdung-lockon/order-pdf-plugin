@@ -1,4 +1,5 @@
 language: php
+dist: trusty
 sudo: false
 
 cache:
@@ -19,7 +20,7 @@ env:
   matrix:
     # ec-cube master
     - ECCUBE_VERSION=master DB=mysql USER=root DBNAME=myapp_test DBPASS=' ' DBUSER=root
-    - ECCUBE_VERSION=master DB=pgsql USER=postgres DBNAME=myapp_test DBPASS=password DBUSER=postgres
+    - ECCUBE_VERSION=master DB=pgsql USER=postgres DBNAME=myapp_test DBPASS=password DBUSER=postgres COVERAGE=true
     - ECCUBE_VERSION=master DB=sqlite
     # ec-cube 3.0.9
     - ECCUBE_VERSION=3.0.9 DB=mysql USER=root DBNAME=myapp_test DBPASS=' ' DBUSER=root
@@ -28,6 +29,7 @@ env:
     - ECCUBE_VERSION=3.0.14 DB=mysql USER=root DBNAME=myapp_test DBPASS=' ' DBUSER=root
     - ECCUBE_VERSION=3.0.14 DB=pgsql USER=postgres DBNAME=myapp_test DBPASS=password DBUSER=postgres
 matrix:
+  fail_fast: true
   fast_finish: true
   include:
     - php: 5.3
@@ -83,8 +85,8 @@ before_script:
 
 script:
   # exec phpunit on ec-cube
-  - ./vendor/bin/phpunit app/Plugin/${PLUGIN_CODE}/Tests
-  - if [[ $TRAVIS_PHP_VERSION =~ ^[7.1] ]]; then ./vendor/bin/phpunit -c app/Plugin/${PLUGIN_CODE}/phpunit.xml.dist --coverage-clover=coverage.clover ; fi
+  if [ !$COVERAGE ]; then ./vendor/bin/phpunit app/Plugin/${PLUGIN_CODE}/Tests; fi
+  if [ $COVERAGE ]; then ./vendor/bin/phpunit -c app/Plugin/${PLUGIN_CODE}/phpunit.xml.dist --coverage-clover=coverage.clover; fi
 
 after_script:
   # disable plugin
@@ -98,5 +100,4 @@ after_script:
 
 after_success:
   # for coveralls
-  - if [[ $TRAVIS_PHP_VERSION =~ ^[7.1] ]]; then php vendor/bin/coveralls -v -x coverage.clover ; fi
-  - exit 0
+  if [ $COVERAGE ]; then php vendor/bin/coveralls -v -x coverage.clover; fi
