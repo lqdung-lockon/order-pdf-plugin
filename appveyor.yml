@@ -18,7 +18,7 @@ environment:
     DBPASS: "Password12!"
     DBUSER: "root"
     BASE_DIR: "C:/projects/ec-cube"
-    PLUGIN_BASE_DIR: "C:/projects/order-pdf-plugin"
+    PLUGIN_BASE_DIR: %appveyor_build_folder%
     ECCUBE_VERSION: "master"
     PLUGIN_CODE: "OrderPdf"
   matrix:
