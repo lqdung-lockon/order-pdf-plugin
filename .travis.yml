@@ -1,6 +1,6 @@
 language: php
+sudo: required
 dist: trusty
-sudo: false
 
 cache:
   directories:
@@ -87,7 +87,6 @@ script:
   - if [ $COVERAGE ]; then ./vendor/bin/phpunit -c app/Plugin/${PLUGIN_CODE}/phpunit.xml.dist --coverage-clover=coverage.clover; fi
 
 after_script:
-  - set -e
   # disable plugin
   - php app/console plugin:develop disable --code=${PLUGIN_CODE}
   # uninstall plugin
@@ -98,6 +97,5 @@ after_script:
   - php app/console plugin:develop enable --code=${PLUGIN_CODE}
 
 after_success:
-  - set -e
   # for coveralls
   - if [ $COVERAGE ]; then php vendor/bin/coveralls -v -x coverage.clover; fi
