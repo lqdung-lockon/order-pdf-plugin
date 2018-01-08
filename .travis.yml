@@ -37,8 +37,6 @@ matrix:
 
   exclude:
   allow_failures:
-    - php: 5.3
-      env: ECCUBE_VERSION=master DB=sqlite
     - php: 5.4
       env: ECCUBE_VERSION=master DB=sqlite
     - php: 5.5
@@ -85,10 +83,11 @@ before_script:
 
 script:
   # exec phpunit on ec-cube
-  if [ !$COVERAGE ]; then ./vendor/bin/phpunit app/Plugin/${PLUGIN_CODE}/Tests; fi
-  if [ $COVERAGE ]; then ./vendor/bin/phpunit -c app/Plugin/${PLUGIN_CODE}/phpunit.xml.dist --coverage-clover=coverage.clover; fi
+  - if [ !$COVERAGE ]; then ./vendor/bin/phpunit app/Plugin/${PLUGIN_CODE}/Tests; fi
+  - if [ $COVERAGE ]; then ./vendor/bin/phpunit -c app/Plugin/${PLUGIN_CODE}/phpunit.xml.dist --coverage-clover=coverage.clover; fi
 
 after_script:
+  - set -e
   # disable plugin
   - php app/console plugin:develop disable --code=${PLUGIN_CODE}
   # uninstall plugin
@@ -99,5 +98,6 @@ after_script:
   - php app/console plugin:develop enable --code=${PLUGIN_CODE}
 
 after_success:
+  - set -e
   # for coveralls
-  if [ $COVERAGE ]; then php vendor/bin/coveralls -v -x coverage.clover; fi
+  - if [ $COVERAGE ]; then php vendor/bin/coveralls -v -x coverage.clover; fi
